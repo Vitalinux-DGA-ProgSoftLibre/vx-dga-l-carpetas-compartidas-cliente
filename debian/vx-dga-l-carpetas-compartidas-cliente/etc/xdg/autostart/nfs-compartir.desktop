@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Exec=/usr/bin/nfs-cliente.sh
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[es_ES]=montar-nfs
+Name=montar-nfs
+Comment[es_ES]=Monta alumnos
+Comment=Monta alumnos

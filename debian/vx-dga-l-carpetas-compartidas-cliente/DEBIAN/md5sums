@@ -1,0 +1,14 @@
+3d204e658fd233e25f0dc794aae69da1  usr/bin/nfs-cliente.sh
+c3ab3a23835ed0c4a67cace92746d252  usr/bin/vx-nfs-privado
+0d0e5583c9c9e8721d4d560a400bfbf7  usr/bin/vx-pk-nfs-privado
+6f07f697081581399ddd2fb56ab168ae  usr/share/doc/vx-dga-l-carpetas-compartidas-cliente/changelog.Debian.gz
+15f6a03316ba0f95c7c5806bff859ff6  usr/share/doc/vx-dga-l-carpetas-compartidas-cliente/copyright
+074608afdafeba53e13ebc59d4209aa6  usr/share/pixmaps/ico-nfs-cliente.xpm
+4109ec1bd136aa87c8c15c8cfaf3b3f3  usr/share/pixmaps/migasfree.png
+6e67c506c0b6d9c1e7411b8c86d0c241  usr/share/pixmaps/migasfree.svg
+7d829a8d6dac9aca255bab59363f3c59  usr/share/pixmaps/vitalinux.png
+4a94fd9cce08e3fac46827b2cf42bfce  usr/share/pixmaps/vitalinux.svg
+bebff482c3715270b16830d84ca1dfa3  usr/share/pixmaps/vx-dga-correcto.png
+e704871a7ec003cf6b1748a107d800ad  usr/share/pixmaps/vx-dga-incorrecto.png
+28e71343a33f8ecc107e52b3ab5ac1b9  usr/share/polkit-1/actions/nfsprivado.pkexec.nfs.policy
+596cc762eac998eac588a034b1bb8886  usr/share/vitalinux/nfs-compartir/unidades-nfs

@@ -1,0 +1,11 @@
+vx-dga-l-carpetas-compartidas-cliente (3.0-1) unstable; urgency=low
+
+  * Añadido el permiso de ejecución exec
+  * Se ha corregido el gran problema del montaje en /media/profesor cuando inicia sesión el usuario profesor
+  * Se ha modificado de auto a noauto la opción de montaje de montaje de las unidades NFS en el fstab
+  * Se ha garantizado que el montaje privado solo aparezca cuando el usuario que inicia sesión es profesor: pro*
+  * Se ha configurado pkexec para configurar en una post-instalación la unidad de red Privada para profesores
+  * Se han añadido unas variables de ERROR en nfs-cliente.sh para evitar mensajes de error periódicos
+  * Se han descrito en un fichero a parte /usr/share/vitalinux/nfs-compartir/unidades-nfs los puntos de montaje
+
+ -- Arturo Martín Romero <amartinromero@gmail.com>  Mon, 18 May 2015 19:39:06 +0200
