@@ -1,0 +1,4 @@
+# Archivo que define nuevos recursos compartidos demandados personalmente por un centro educativo
+## Para agregar un nuevo recurso habrá que tener en cuenta su desmontaje en sudoers.d, y agregarlo también en fstab. Además hay que configurar el recurso compartido en el correspondiente servidor caché del centro
+## La línea incluir aquí a modo de ejemplo para que sea correctamente tenida en cuenta sería la misma que en del archivo nfs-recursos:
+## /nfs/nuevo-recurso:/media/nuevo-recurso:Se ha montado correctamente la unidad de red para Alumnos:No se han podido montar las Unidad de Red de Alumnos. Ha aparecido un error inesperado:fstab:NOADM

@@ -1,0 +1,4 @@
+# Archivo que define los recursos que se excluyen según demandas del centro
+## Centro:usuarios excluidos separados por comas:recursos a excluir separados por comas
+SEC-LUISBUNUEL:ALL:alumno
+SEC-LUISBUNUEL:/media/alumnos,/media/privado:profesor

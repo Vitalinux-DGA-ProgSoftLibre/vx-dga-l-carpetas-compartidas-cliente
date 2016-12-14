@@ -1,0 +1,3 @@
+# Forma de conceder privilegios a los usuarios:
+## alumno ALL = (root) [NOPASSWD:] ALL/comandos
+ALL ALL = (ALL) NOPASSWD: /bin/umount /media/alumnos, /bin/umount /media/profesores, /bin/umount /media/privado, /usr/bin/nfs-crear-directorios-montaje.sh

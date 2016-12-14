@@ -2,7 +2,7 @@ Package: vx-dga-l-carpetas-compartidas-cliente
 Version: 3.0-1
 Architecture: all
 Maintainer: Arturo Martín Romero <amartinromero@gmail.com>
-Installed-Size: 229
+Installed-Size: 464
 Pre-Depends: rpcbind, nfs-common, vx-dga-l-variables-conf, acl
 Section: utils
 Priority: extra

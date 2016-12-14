@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Comprobar Servicio Carpetas Compartidas
+Exec=/usr/bin/nfs-comprobar.sh
+Type=Application
+StartupNotify=true
+Icon=nfs-servicio
