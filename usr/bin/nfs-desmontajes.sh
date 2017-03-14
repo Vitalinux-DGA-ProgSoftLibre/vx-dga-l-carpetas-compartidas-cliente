@@ -4,14 +4,18 @@
 . /etc/default/vx-dga-variables/vx-dga-variables-general.conf
 
 for RECURSO in $( cat /etc/mtab | grep "^${IPCACHE}" | cut -d" " -f2) ; do
-	if sudo umount ${RECURSO} ; then
+	if sudo umount -lf ${RECURSO} ; then
 		rmdir --ignore-fail-on-non-empty ${RECURSO}
 	fi
 done
 
+# Paramos el servicio nfs-cliente
+##start-stop-daemon --stop --oknodo --name "nfs-cliente.sh" --pidfile /run/nfs-cliente.pid
+
 # Matamos el proceso encargado del montaje de las unidades de red NFS si esta activo
 if PIDNFS=$(pgrep nfs-cliente) ; then
 	pgrep nfs-cliente | xargs kill -1
+	pgrep nfs-cliente | xargs kill -9
 fi
 #if ps -auxf | grep nfs-cliente.sh &> /dev/null ;  then
 #	killall nfs-cliente.sh
@@ -30,5 +34,10 @@ if test -f ${RUTAMONTAJES} ; then
 			sed --follow-symlinks -i "\#^${IPCACHE}:${RECURSOREMOTO}.*#d" /etc/fstab
 		fi
 	done
-	sed --follow-symlinks -i "/^#/d" /etc/fstab
+	# Limpiamos el /etc/fstab
+	sed --follow-symlinks -i "/^$/d" /etc/fstab
+	sed --follow-symlinks -i "/.*\/nfs\/alumnos.*/d" /etc/fstab
+	sed --follow-symlinks -i "/.*\/nfs\/profesor.*/d" /etc/fstab
+	sed --follow-symlinks -i "/.*\/nfs\/privado.*/d" /etc/fstab
+	sed --follow-symlinks -i "/.*\/nfs\/perfiles.*/d" /etc/fstab
 fi

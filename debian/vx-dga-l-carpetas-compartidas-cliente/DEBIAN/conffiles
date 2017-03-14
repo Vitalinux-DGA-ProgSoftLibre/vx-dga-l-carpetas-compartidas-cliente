@@ -1,2 +1,3 @@
 /etc/sudoers.d/permisos-nfs-desmontajes
+/etc/sudoers.d/permisos-nfs-montaje
 /etc/xdg/autostart/nfs-compartir.desktop

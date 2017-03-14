@@ -1,3 +1,28 @@
+vx-dga-l-carpetas-compartidas-cliente (3.0-14) unstable; urgency=low
+
+  * Se unifica las tareas de salida en postrun de vitalinux en lugar del logout
+
+ -- Ignacio Sancho <sannacho@gmail.com>  Tue, 14 Mar 2017 10:39:06 +0200
+
+vx-dga-l-carpetas-compartidas-cliente (3.0-13) unstable; urgency=low
+
+  * Se corrige el HOMEUSU para usuarios del dominio en el post-instalación
+
+ -- Arturo Martín Romero <amartinromero@gmail.com>  Mon, 20 Feb 2017 08:39:06 +0200
+
+vx-dga-l-carpetas-compartidas-cliente (3.0-12) unstable; urgency=low
+
+  * Se añade una exclusión para el IES Miguel Catalán
+
+ -- Arturo Martín Romero <amartinromero@gmail.com>  Fri, 3 Feb 2017 10:39:06 +0200
+
+vx-dga-l-carpetas-compartidas-cliente (3.0-7) unstable; urgency=low
+
+  * Se inicia el servicio mediante start-stop-daemon en modo background
+  * Se añade la opción de agregar nuevos recursos a un centro o ALL a traves de nfs-agregados
+
+ -- Arturo Martín Romero <amartinromero@gmail.com>  Mon, 16 Jan 2017 19:39:06 +0200
+
 vx-dga-l-carpetas-compartidas-cliente (3.0-1) unstable; urgency=low
 
   * Añadido el permiso de ejecución exec

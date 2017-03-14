@@ -18,17 +18,17 @@ set -e
 
 
 case "$1" in
-    remove|upgrade|deconfigure)
-	## Eliminamos del fstab los puntos de montaje NFS y cualquier línea en blanco que hubiera
-	## Limpiamos el /etc/fstab
-	sed -i "/^#/d" /etc/fstab
-	sed -i "/^$/d" /etc/fstab
-	sed -i "/.*\/nfs\/alumnos.*/d" /etc/fstab
-	sed -i "/.*\/nfs\/profesor.*/d" /etc/fstab
-	sed -i "/.*\/nfs\/privado.*/d" /etc/fstab
-	sed -i "/.*\/nfs\/perfiles.*/d" /etc/fstab
+    remove)
+	# Desmontamos lo que haya en ese momento en el equipo
+	if test -f "/usr/bin/nfs-desmontajes.sh" ; then
+		/usr/bin/nfs-desmontajes.sh
+	fi
+	#if test -d /usr/share/vitalinux/nfs-compartir ; then
+	#	rm -Rf /usr/share/vitalinux/nfs-compartir
+	#fi
     ;;
-
+    upgrade|deconfigure)
+	;;
     failed-upgrade)
     ;;
 

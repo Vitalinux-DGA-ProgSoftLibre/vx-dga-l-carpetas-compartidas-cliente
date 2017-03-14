@@ -32,6 +32,11 @@ if test -f /usr/bin/migasfree-tags ; then
 	echo "--> Las etiquetas Migasfree del equipo son: ${ETIQUETAS}"
 fi
 
+if test -f /usr/bin/nfs-agregar-montaje.sh ; then
+	echo "--> Comprobamos si hay algún nuevo recurso compartido que haya que agregar ..."
+	sudo /usr/bin/nfs-agregar-montaje.sh
+fi
+
 ## Para evitar ante errores imprevistos que se reproduzcan los mensajes de error periodicamente:
 # Se define un array de errores donde cada posición esta asociada a un punto de montaje
 # La variable CONTADOR se encargará de determinar en que punto de montaje estamos
@@ -66,12 +71,13 @@ while true ; do
 					#	FLAGMONTAR=0
 					#fi
 
-					if ! test -z "${ETIQUETAS}" ; then
+					if ( test ${FLAGMONTAR} -eq 1 ) && \
+						( test -n "${ETIQUETAS}" ) ; then
 						for LINEA in $(cat ${NFSEXCLUIDOS} | sed "/^#.*/d" | sed "/^$/d") ; do
 							CENTROEXCLUIDO=$(echo ${LINEA} | cut -d":" -f1)
 							MONTAJESEXCLUIDOS=$(echo ${LINEA} | cut -d":" -f2)
 							USUARIOSEXCLUIDOS=$(echo ${LINEA} | cut -d":" -f3)
-							if (echo "${ETIQUETAS}" | grep "${CENTROEXCLUIDO}" &> /dev/null) ; then
+							if ( echo "${ETIQUETAS}" | grep "${CENTROEXCLUIDO}" &> /dev/null ) ; then
 								echo "--> Este equipo tiene excluidos: ${CENTROEXCLUIDO} -- ${ETIQUETAS}"
 								if (echo "${USUARIOSEXCLUIDOS}" | grep "${USUARIO}"  &> /dev/null) \
 									|| ( test "${USUARIOSEXCLUIDOS}" = "ALL") ; then
@@ -88,7 +94,7 @@ while true ; do
 
 					if test ${FLAGMONTAR} -eq 1  ; then
 						if sudo /usr/bin/nfs-crear-directorios-montaje.sh "$CARPETAMONTAJE" "$RECURSOREMOTO" "$MODOMONTAJE" ; then
-							if mount $CARPETAMONTAJE ; then
+							if su ${USUARIO} -c "mount $CARPETAMONTAJE" --login ; then
 								notify-send -i vx-dga-correcto "$MENSAJEOK"
 								ERRORES[$CONTADOR]=0
 							else

@@ -9,22 +9,30 @@
 CARPETAMONTAJE="$1"
 RECURSOREMOTO="$2"
 MODOMONTAJE="$3"
+LOG="/var/log/vitalinux/nfs-crear-directorios-montaje.log"
+
 if ! test -d ${CARPETAMONTAJE} ; then
 	if mkdir ${CARPETAMONTAJE} ; then
-		if test "${MODOMONTAJE}" = "fstab" \
-			&& ! (grep ^$IPCACHE:$RECURSOREMOTO /etc/fstab &> /dev/null) ; then
-			if echo "$IPCACHE:$RECURSOREMOTO $CARPETAMONTAJE nfs \
-actimeo=1800,noatime,nolock,bg,nfsvers=3,tcp,rw,noauto,user,hard,intr,defaults,exec 0 0" >> /etc/fstab ; then
-				exit 0
-			else
-				exit 1
-			fi
-		else
-			exit 0
-		fi
+		echo "=> $(date) - Se ha creado la carpeta para el recurso: " | tee -a ${LOG}
 	else
+		echo "=> $(date) - Problemas al crear carpeta para el recurso: $IPCACHE:$RECURSOREMOTO" | tee -a ${LOG}
 		exit 1
 	fi
 else
+	echo "=> $(date) - El directorio \"${CARPETAMONTAJE}\" ya existe ... pasamos a montarlo ..." | tee -a ${LOG}
+fi
+
+if test "${MODOMONTAJE}" = "fstab" \
+	&& ! (grep ^$IPCACHE:$RECURSOREMOTO /etc/fstab &> /dev/null) ; then
+	echo "=> $(date) - Se va configurar en fstab: $IPCACHE:$RECURSOREMOTO"
+	if echo "$IPCACHE:$RECURSOREMOTO $CARPETAMONTAJE nfs \
+actimeo=1800,noatime,nolock,bg,nfsvers=3,tcp,rw,noauto,user,hard,intr,defaults,exec 0 0" >> /etc/fstab ; then
+		exit 0
+	else
+		echo "=> $(date) - Problemas al configurar fstab para: $IPCACHE:$RECURSOREMOTO" | tee -a ${LOG}
+		exit 1
+	fi
+else
+	echo "=> $(date) - Recurso no fstab: $IPCACHE:$RECURSOREMOTO $MODOMONTAJE" | tee -a ${LOG}
 	exit 0
 fi
