@@ -1,3 +1,21 @@
+vx-dga-l-carpetas-compartidas-cliente (3.0-17) unstable; urgency=low
+
+  * Se añaden excluidos para el IES-AVEMPACE
+
+ -- Arturo Martín Romero <amartinromero@gmail.com>  Tue, 6 Jun 2017 08:39:06 +0200
+
+vx-dga-l-carpetas-compartidas-cliente (3.0-16) unstable; urgency=low
+
+  * Se añaden excluidos para el IES-GOYA
+
+ -- Arturo Martín Romero <amartinromero@gmail.com>  Mon, 8 May 2017 08:39:06 +0200
+
+vx-dga-l-carpetas-compartidas-cliente (3.0-15) unstable; urgency=low
+
+  * Se añaden excluidos para el CRA-ALGARS
+
+ -- Arturo Martín Romero <amartinromero@gmail.com>  Mon, 20 Feb 2017 08:39:06 +0200
+
 vx-dga-l-carpetas-compartidas-cliente (3.0-14) unstable; urgency=low
 
   * Se unifica las tareas de salida en postrun de vitalinux en lugar del logout

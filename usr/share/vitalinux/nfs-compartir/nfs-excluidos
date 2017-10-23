@@ -4,3 +4,6 @@ SEC-LUISBUNUEL:ALL:alumno:
 SEC-LUISBUNUEL:/media/alumnos,/media/privado:profesor:
 SEC-MIGUELSERVET:/media/alumnos:ALL:
 SEC-MIGUELCATALAN:/media/alumnos:ALL:
+CRA-ALGARS:/media/profesores,/media/privado:ALL:
+SEC-GOYA:/media/alumnos:ALL:
+SEC-IESAVEMPACE:/media/alumnos,/media/privado:ALL:
