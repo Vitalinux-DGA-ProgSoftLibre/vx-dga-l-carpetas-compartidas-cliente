@@ -1,9 +1,9 @@
 Package: vx-dga-l-carpetas-compartidas-cliente
-Version: 3.0-17
+Version: 3.0-18
 Architecture: all
 Maintainer: Arturo Martín Romero <amartinromero@gmail.com>
-Installed-Size: 414
-Depends: rpcbind, nfs-common, vx-dga-l-variables-conf, acl
+Installed-Size: 448
+Depends: rpcbind, nfs-common, vx-dga-l-variables-conf, acl, vx-dga-l-scripts
 Section: utils
 Priority: extra
 Homepage: https://github.com/vitalinux

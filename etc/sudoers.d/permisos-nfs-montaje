@@ -1,3 +1,3 @@
 # Forma de conceder privilegios a los usuarios:
 ## alumno ALL = (root) [NOPASSWD:] ALL/comandos
-ALL ALL = (ALL) NOPASSWD: /sbin/start-stop-daemon --start --oknodo --quiet --name nfs-cliente.sh --pidfile /run/nfs-cliente.pid -b --exec /usr/bin/nfs-cliente.sh, /usr/bin/nfs-cliente.sh, /usr/bin/nfs-crear-directorios-montaje.sh, /usr/bin/nfs-agregar-montaje.sh
+ALL ALL=(ALL) NOPASSWD: /sbin/start-stop-daemon --start --quiet -m --name nfs-cliente.sh --pidfile /run/nfs-cliente.pid -b -a /usr/bin/nfs-cliente.sh

@@ -21,16 +21,11 @@ set -e
 case "$1" in
     configure)
 
-# Exportamos variables útiles
-. /etc/default/vx-dga-variables/vx-dga-variables-general.conf
-
-USUARIOLOGIN=$(who | grep " :0 " | cut -d" " -f1)
-USUARIOAUTOLOGIN=$(cat /etc/lightdm/lightdm.conf | grep autologin-user= | cut -d"=" -f2)
-
 # Damos permisos adecuados a los scripts que incluye el paquete
 chmod +x /usr/bin/nfs-*.sh
-chmod +x /usr/bin/vx-*nfs*
+chmod +x /usr/share/vitalinux/postrun.d/vx-nfs-desmontajes.sh
 
+###
 # Eliminamos posibles viejas configuraciones que ahora no son válidas
 for HOMEUSU in $(/usr/bin/vx-home-usuarios-graficos) ; do
 	if test -f  ${HOMEUSU}/.config/autostart/nfs-compartir.desktop ; then
@@ -42,75 +37,23 @@ if test -f /etc/skel/.config/autostart/nfs-compartir.desktop ; then
 	rm -f /etc/skel/.config/autostart/nfs-compartir.desktop
 fi
 
-##if [ -n "$2" ] && dpkg --compare-versions "$2" ge-nl "3.0-0" ; then
-##  echo "=> Carpetas Compartidas: versión anterior $2 - No se necesita post-instalación"
-##  exit 0
-##fi
-
-# Desmontamos lo que haya en ese momento en el equipo
-if test -f "/usr/bin/nfs-desmontajes.sh" ; then
-	/usr/bin/nfs-desmontajes.sh
-fi
-
-## Limpiamos el /etc/fstab (lo limpia el script anterior)
-sed --follow-symlinks -i "/^#/d" /etc/fstab
-sed --follow-symlinks -i "/^$/d" /etc/fstab
-sed --follow-symlinks -i "/.*\/nfs\/alumnos.*/d" /etc/fstab
-sed --follow-symlinks -i "/.*\/nfs\/profesor.*/d" /etc/fstab
-sed --follow-symlinks -i "/.*\/nfs\/privado.*/d" /etc/fstab
-sed --follow-symlinks -i "/.*\/nfs\/perfiles.*/d" /etc/fstab
-
-# Creamos los archivos necesarios para el acceso a los recursos compartidos en caso de no existir:
-#DIR_RECURSOS_DEFAULT="/usr/share/vitalinux/nfs-compartir-default"
-#DIR_RECURSOS="/usr/share/vitalinux/nfs-compartir"
-#NFSRECURSOS="nfs-recursos"
-#NFSEXCLUIDOS="nfs-excluidos"
-#NFSAGREGADOS="nfs-agregados"
-#if ! test -d /usr/share/vitalinux/nfs-compartir ; then
-#	mkdir -p /usr/share/vitalinux/nfs-compartir
-#fi
-#for ARCHIVO in ${NFSRECURSOS} ${NFSEXCLUIDOS} ${NFSAGREGADOS} ; do
-#	if ! test -f ${DIR_RECURSOS}/${ARCHIVO} ; then
-#		#sort ${DIR_RECURSOS_DEFAULT}/${ARCHIVO} ${DIR_RECURSOS}/${ARCHIVO} | sed "/^#.*/d" | sed "/^$/d" | uniq -u
-#		cp ${DIR_RECURSOS_DEFAULT}/${ARCHIVO} ${DIR_RECURSOS}/${ARCHIVO}
-#	fi
-#done
-
-
-# Lanzamos el montaje de unidades NFS en el cliente:
-if ! pgrep nfs-cliente &> /dev/null ; then
-	echo "--> El servicio de Carpetas Compartidas no esta activo ..."
-	echo "--> Se va a iniciar el Servicio de Carpetas Compartidas ..."
-	#su -c "/usr/bin/nfs-cliente.sh &" --login root
-	start-stop-daemon --start --oknodo --quiet -b \
-		--exec /usr/bin/nfs-cliente.sh
-else
-	echo "--> Ya existe un servicio de Carpetas Compartidas Activo ... "
-	echo "--> La nueva versión de este servicio actuará a partir del siguiente inicio de sesión ..."
-fi
-
-# Configuramos la tarea al cierre de la sesión en postrun.
 # Eliminamos el rastro antiguo de logout (se podria dejar, no lo llama nadie)
 if [ -f usr/bin/tareas-logout ] ; then
 	sed -i "/nfs*./d" /usr/bin/tareas-logout
 fi
-#echo "--> Configuramos como tarea al cierre de sesión el desmontaje de las carpetas compartidas ..."
-#echo "--> Configuramos como tarea al cierre de sesión el agregar nuevos posibles puntos de montaje ..."
-#if test -f /usr/bin/tareas-logout ; then
-#	if ( test -f /usr/bin/nfs-desmontajes.sh) \
-#		&& ! ( grep "^/usr/bin/nfs-desmontajes.sh" /usr/bin/tareas-logout &> /dev/null ) ; then
-#		echo "/usr/bin/nfs-desmontajes.sh" >> /usr/bin/tareas-logout
-#	fi
-#
-#	if ( test -f /usr/bin/nfs-agregar-montaje.sh ) \
-#		&& ! ( grep "^/usr/bin/nfs-agregar-montaje.sh" /usr/bin/tareas-logout &> /dev/null ) ; then
-#			echo "/usr/bin/nfs-agregar-montaje.sh" >> /usr/bin/tareas-logout
-#	fi
-#else
-#	echo "/usr/bin/nfs-desmontajes.sh" >> /usr/bin/tareas-logout
-#	echo "/usr/bin/nfs-agregar-montaje.sh" >> /usr/bin/tareas-logout
-#	chmod +x /usr/bin/tareas-logout
-#fi
+###
+
+# Matamos el proceso cliente actual (con oknodo para que no de error la postinst) y Desmontamos lo que haya en ese momento en el equipo
+#start-stop-daemon --oknodo --stop --name "nfs-cliente.sh"
+# Matamos por si queda algo residente de versiones anteriores
+pgrep nfs-cliente > /dev/null 2>&1 && pkill nfs-cliente
+[ -f "/usr/bin/nfs-desmontajes.sh" ] && /usr/bin/nfs-desmontajes.sh > /dev/null 2>&1
+
+
+# Lanzamos el montaje de unidades NFS en el cliente:
+ /sbin/start-stop-daemon --oknodo --start --quiet -m --name nfs-cliente.sh --pidfile /run/nfs-cliente.pid -b -a /usr/bin/nfs-cliente.sh
+
+
 
     ;;
 

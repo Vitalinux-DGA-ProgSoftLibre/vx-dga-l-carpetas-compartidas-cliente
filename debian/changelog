@@ -1,3 +1,11 @@
+vx-dga-l-carpetas-compartidas-cliente (3.0-18) unstable; urgency=low
+
+  * Se estructura el montaje basado en Grupos de usuario en coherencia con el servidor
+  * Desconexión del caché cuando no esté diponible
+  * La funcionalidad de nfs-desmontaje no mata el proceso de montaje
+
+ -- Ignacio Sancho Morte <sannacho@gmail.com>  Mon, 23 Oct 2017 08:39:06 +0200
+
 vx-dga-l-carpetas-compartidas-cliente (3.0-17) unstable; urgency=low
 
   * Se añaden excluidos para el IES-AVEMPACE

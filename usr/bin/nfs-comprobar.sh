@@ -7,8 +7,12 @@
 SEAT_ACTIVO="seat0"
 SESION_ACTIVA=$(loginctl show-seat ${SEAT_ACTIVO} | grep 'ActiveSession' | cut -d'=' -f2)
 USUARIO=$(loginctl list-sessions | grep "${SEAT_ACTIVO}" | grep "${SESION_ACTIVA}" | tr -s ' ' ' ' | cut -d' ' -f4)
-
-if test $(showmount -e ${IPCACHE} | grep -v "Export list" | wc -l) -ge 1 ; then
+if ! ( ping -c 1 "$IPCACHE" && echo >/dev/tcp/"${IPCACHE}"/2049 ) >/dev/null 2>&1 ; then
+	echo -e "\nListado de Recursos Compartidos por el Caché de tu Centro:<b><tt><span foreground='blue'>" > /tmp/listado-recursos-nfs.${USUARIO}
+	echo -e "No se puede alcanzar al Servidor Cache!" >> /tmp/listado-recursos-nfs.${USUARIO}
+	echo "IP del Servidor Caché configurado: $IPCACHE" >> /tmp/listado-recursos-nfs.${USUARIO}
+	echo -e "</span></tt></b>" >> /tmp/listado-recursos-nfs.${USUARIO}
+elif test $(showmount -e ${IPCACHE} | grep -v "Export list" | wc -l) -ge 1 ; then
 	echo -e "\nListado de Recursos Compartidos por el Caché de tu Centro:\n<b><tt><span foreground='blue'>" > /tmp/listado-recursos-nfs.${USUARIO}
 	showmount -e ${IPCACHE} | grep -v "Export list" >> /tmp/listado-recursos-nfs.${USUARIO}
 	echo -e "</span></tt></b>" >> /tmp/listado-recursos-nfs.${USUARIO}
@@ -23,7 +27,7 @@ else
 	echo -e "</span></tt></b>" >> /tmp/listado-recursos-nfs.${USUARIO}
 fi
 
-if PIDNFS=$(pgrep nfs-cliente) &> /dev/null ; then
+if start-stop-daemon --status --name nfs-cliente.sh ; then
 	yad --center --title "Estado del Servicio NFS" \
 		--width 660 \
 		--image nfs-servicio \
@@ -39,8 +43,8 @@ else
 		--window-icon=/usr/share/lxpanel/images/vitalinux.svg \
 		--text "El Servicio de Carpetas Compartidas no esta activo. \n La razón es desconocida. \n <b>¿Quieres activar el Servicio?</b>" \
 		--button="Activar Servicio":0 --button="Dejarlo Desactivado":1 ; then
-		if test -f /usr/bin/nfs-cliente.sh ; then
-			/usr/bin/nfs-cliente.sh &
+		if [ -f /usr/bin/nfs-cliente.sh ] ; then
+			sudo /sbin/start-stop-daemon --start --quiet -m --name nfs-cliente.sh --pidfile /run/nfs-cliente.pid -b -a /usr/bin/nfs-cliente.sh
 		fi
 	fi
 fi

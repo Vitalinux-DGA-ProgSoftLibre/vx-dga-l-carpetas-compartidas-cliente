@@ -19,13 +19,12 @@ set -e
 
 case "$1" in
     remove)
-	# Desmontamos lo que haya en ese momento en el equipo
-	if test -f "/usr/bin/nfs-desmontajes.sh" ; then
-		/usr/bin/nfs-desmontajes.sh
-	fi
-	#if test -d /usr/share/vitalinux/nfs-compartir ; then
-	#	rm -Rf /usr/share/vitalinux/nfs-compartir
-	#fi
+	
+    # Matamos el proceso cliente actual y Desmontamos lo que haya en ese momento en el equipo
+    /sbin/start-stop-daemon --stop --name "nfs-cliente.sh"
+    #pkill nfs-cliente
+    [ -f "/usr/bin/nfs-desmontajes.sh" ] && /usr/bin/nfs-desmontajes.sh
+
     ;;
     upgrade|deconfigure)
 	;;

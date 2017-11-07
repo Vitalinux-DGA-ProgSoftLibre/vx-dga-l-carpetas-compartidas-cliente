@@ -1,25 +1,19 @@
 #!/bin/bash
-
+# Código de estado que devuelve:
+# 0: si ha desmontado algún recurso y todo ha funcionado bien
+# 1: si no ha desmontado nada, pero todo ha funcionado bien
+# X: no sabemos que ha podido ocurrir...error dado por los comandos.
 ## Comenzamos importando y definiendo las variables que usaremos posteriormente:
 . /etc/default/vx-dga-variables/vx-dga-variables-general.conf
 
+DESMONTA=0
 for RECURSO in $( cat /etc/mtab | grep "^${IPCACHE}" | cut -d" " -f2) ; do
-	if sudo umount -lf ${RECURSO} ; then
+	if umount -lf ${RECURSO} ; then
 		rmdir --ignore-fail-on-non-empty ${RECURSO}
+		DESMONTA=1
 	fi
 done
 
-# Paramos el servicio nfs-cliente
-##start-stop-daemon --stop --oknodo --name "nfs-cliente.sh" --pidfile /run/nfs-cliente.pid
-
-# Matamos el proceso encargado del montaje de las unidades de red NFS si esta activo
-if PIDNFS=$(pgrep nfs-cliente) ; then
-	pgrep nfs-cliente | xargs kill -1
-	pgrep nfs-cliente | xargs kill -9
-fi
-#if ps -auxf | grep nfs-cliente.sh &> /dev/null ;  then
-#	killall nfs-cliente.sh
-#fi
 
 # Eliminamos los puntos de montaje del fstab
 RUTAMONTAJES="/usr/share/vitalinux/nfs-compartir/nfs-recursos"
@@ -41,3 +35,5 @@ if test -f ${RUTAMONTAJES} ; then
 	sed --follow-symlinks -i "/.*\/nfs\/privado.*/d" /etc/fstab
 	sed --follow-symlinks -i "/.*\/nfs\/perfiles.*/d" /etc/fstab
 fi
+[ "$DESMONTA" = 1 ] && echo "DESMONTA"
+exit 0

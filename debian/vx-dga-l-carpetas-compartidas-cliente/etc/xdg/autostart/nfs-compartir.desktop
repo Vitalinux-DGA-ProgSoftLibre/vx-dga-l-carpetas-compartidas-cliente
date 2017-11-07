@@ -2,7 +2,8 @@
 Type=Application
 ##Exec=/usr/bin/nfs-cliente.sh
 #Exec=sudo /sbin/start-stop-daemon --start --oknodo --quiet -b --exec /usr/bin/nfs-cliente.sh
-Exec=sudo /sbin/start-stop-daemon --start --oknodo --quiet --name nfs-cliente.sh --pidfile /run/nfs-cliente.pid -b --exec /usr/bin/nfs-cliente.sh
+#Exec=sudo /sbin/start-stop-daemon --start --oknodo --quiet --name nfs-cliente.sh --pidfile /run/nfs-cliente.pid -b --exec /usr/bin/nfs-cliente.sh
+Exec=sudo /sbin/start-stop-daemon --start --quiet -m --name nfs-cliente.sh --pidfile /run/nfs-cliente.pid -b -a /usr/bin/nfs-cliente.sh
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true

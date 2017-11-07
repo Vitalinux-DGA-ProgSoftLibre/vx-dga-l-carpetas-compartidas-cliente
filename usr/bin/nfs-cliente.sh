@@ -1,8 +1,23 @@
 #!/bin/bash
 # Autor: Arturo Martín Romero - amartinromero@gmail.com - programa de software libre
 
+is_in_group() {
+
+	USU="$1"
+	GRUPO="$2"
+	if id -Gn "$USU" | grep "$GRUPO" >/dev/null 2>&1 ; then
+		return 0
+	else
+		return 1
+	fi
+}
+
 ## Comenzamos importando y definiendo las variables que usaremos posteriormente:
 . /etc/default/vx-dga-variables/vx-dga-variables-general.conf
+# En el caso de salir de forma inespearada desmontamos lo que haya montado
+trap '/usr/bin/nfs-desmontajes.sh; exit' INT TERM EXIT
+
+LOG="/var/log/vitalinux/nfs-cliente.log"
 
 NFSRECURSOS="/usr/share/vitalinux/nfs-compartir/nfs-recursos"
 if ! test -f ${NFSRECURSOS} ; then
@@ -10,42 +25,24 @@ if ! test -f ${NFSRECURSOS} ; then
 fi
 NFSEXCLUIDOS="/usr/share/vitalinux/nfs-compartir/nfs-excluidos"
 
-# Para determinar el usuario gráfico:
-# if ! test -z ${XAUTHORITY} ; then
-# 	USUARIO=$(getent passwd | grep ${XAUTHORITY//\/.Xauthority/} | cut -d":" -f1)
-# else
-# 	USUARIO=$(who | grep "(:0" | tr -s " " " " | cut -d" " -f1 | uniq)
-# fi
+
+USUARIO=$(vx-usuario-grafico)
 
 
-#SEAT_ACTIVO=$(loginctl list-seats | sed -e '/^$/d' | grep -v SEAT | grep -v "seats listed")
-SEAT_ACTIVO="seat0"
-SESION_ACTIVA=$(loginctl show-seat ${SEAT_ACTIVO} | grep 'ActiveSession' | cut -d'=' -f2)
-USUARIO=$(loginctl list-sessions | grep "${SEAT_ACTIVO}" | grep "${SESION_ACTIVA}" | tr -s ' ' ' ' | cut -d' ' -f4)
-
-if test -f /usr/bin/migasfree-cid ; then
-	CID="$(migasfree-cid)"
-	echo "--> El CID del equipo es: ${CID} ..."
-fi
 if test -f /usr/bin/migasfree-tags ; then
-	ETIQUETAS="$(sudo migasfree-tags -g | tr -s '"' ' ')"
+	ETIQUETAS="$(migasfree-tags -g | tr -s '"' ' ')"
 	echo "--> Las etiquetas Migasfree del equipo son: ${ETIQUETAS}"
 fi
 
 if test -f /usr/bin/nfs-agregar-montaje.sh ; then
-	echo "--> Comprobamos si hay algún nuevo recurso compartido que haya que agregar ..."
-	sudo /usr/bin/nfs-agregar-montaje.sh
+	echo "--> Comprobamos si hay algún nuevo recurso compartido que haya que agregar ..." | tee -a ${LOG}
+	/usr/bin/nfs-agregar-montaje.sh "$ETIQUETAS"
 fi
 
-## Para evitar ante errores imprevistos que se reproduzcan los mensajes de error periodicamente:
-# Se define un array de errores donde cada posición esta asociada a un punto de montaje
-# La variable CONTADOR se encargará de determinar en que punto de montaje estamos
-ERRORES=(0 0 0 0 0 0 0)
-
+## **** Modificar el programa para que si el recurso no es montable (excluido) no haga nada antes...
 while true ; do
-	CONTADOR=0
-	# Comprobamos si el servidor Caché esta presente y da servicio NFS
-	if ping -c 1 $IPCACHE &> /dev/null && nc -zv $IPCACHE 2049 &> /dev/null ; then
+	# Comprobamos si el servidor Caché esta presente y da servicio NFS cada xx segundos por si hay caída
+	if ( ping -c 1 "$IPCACHE" && echo >/dev/tcp/"${IPCACHE}"/2049 ) >/dev/null 2>&1 ; then
 		for LINEA in $(cat ${NFSRECURSOS} | sed "/^#.*/d" | tr -s " " "*") ; do
 			RECURSO="$(echo $LINEA | tr -s '*' ' ')"
 			RECURSOREMOTO=$(echo $RECURSO | cut -d":" -f1)
@@ -54,63 +51,54 @@ while true ; do
 			MENSAJEERROR=$(echo $RECURSO | cut -d":" -f4)
 			MODOMONTAJE=$(echo $RECURSO | cut -d":" -f5)
 			TIPOUSUARIO=$(echo $RECURSO | cut -d":" -f6)
-			# Montamos los recursos compartidos configurados comprobando si esta excluido o no
-			if (showmount -e $IPCACHE | grep $RECURSOREMOTO &> /dev/null) \
-				&& ! (grep "^$IPCACHE:$RECURSOREMOTO" /etc/mtab &> /dev/null) ; then
-				# && ( grep "^$IPCACHE:$RECURSOREMOTO" /etc/fstab &> /dev/null ); then
-
-					FLAGMONTAR=1
-
-					if test "${TIPOUSUARIO}" = "ADM" \
-						&& ! ( id ${USUARIO} | grep "4(adm)" &> /dev/null ) ; then
-							FLAGMONTAR=0
-					fi
-
-					#if ( echo $RECURSOREMOTO | grep privado &> /dev/null ) \
-					#	&& ! ( id $USUARIO | grep adm &> /dev/null ) ; then
-					#	FLAGMONTAR=0
-					#fi
-
-					if ( test ${FLAGMONTAR} -eq 1 ) && \
-						( test -n "${ETIQUETAS}" ) ; then
-						for LINEA in $(cat ${NFSEXCLUIDOS} | sed "/^#.*/d" | sed "/^$/d") ; do
-							CENTROEXCLUIDO=$(echo ${LINEA} | cut -d":" -f1)
-							MONTAJESEXCLUIDOS=$(echo ${LINEA} | cut -d":" -f2)
-							USUARIOSEXCLUIDOS=$(echo ${LINEA} | cut -d":" -f3)
-							if ( echo "${ETIQUETAS}" | grep "${CENTROEXCLUIDO}" &> /dev/null ) ; then
-								echo "--> Este equipo tiene excluidos: ${CENTROEXCLUIDO} -- ${ETIQUETAS}"
-								if (echo "${USUARIOSEXCLUIDOS}" | grep "${USUARIO}"  &> /dev/null) \
-									|| ( test "${USUARIOSEXCLUIDOS}" = "ALL") ; then
-									echo "--> El usuario tiene exclusiones: ${USUARIO} -- ${USUARIOSEXCLUIDOS}"
-									if ( echo "${MONTAJESEXCLUIDOS}" | grep "${CARPETAMONTAJE}" &> /dev/null ) \
-										|| ( test "${MONTAJESEXCLUIDOS}" = "ALL" ); then
-										echo "--> Recurso excluido: ${CARPETAMONTAJE} -- ${MONTAJESEXCLUIDOS}"
-										FLAGMONTAR=0
-									fi
-								fi
-							fi
-						done
-					fi
-
-					if test ${FLAGMONTAR} -eq 1  ; then
-						if sudo /usr/bin/nfs-crear-directorios-montaje.sh "$CARPETAMONTAJE" "$RECURSOREMOTO" "$MODOMONTAJE" ; then
-							if su ${USUARIO} -c "mount $CARPETAMONTAJE" --login ; then
-								notify-send -i vx-dga-correcto "$MENSAJEOK"
-								ERRORES[$CONTADOR]=0
-							else
-								if test ${ERRORES[$CONTADOR]} -eq 0 ; then
-									notify-send -i vx-dga-incorrecto \
-									"No se han podido montar las Unidades de Red. Ha aparecido un error inesperado"
-									ERRORES[$CONTADOR]=1
-								fi
+			
+			FLAGMONTAR=1
+			# Solo los usuarios administradores de la máquina pueden montar recursos marcados como ADM
+			if [ "${TIPOUSUARIO}" = "ADM" ] && ! is_in_group "$USUARIO" "sudo" ; then
+				FLAGMONTAR=0
+				break
+			fi
+			# Si el recurso está excluido directamente no se monta
+			if [ -n "${ETIQUETAS}" ] ; then
+				for LINEA in $(cat ${NFSEXCLUIDOS} | sed "/^#.*/d" | sed "/^$/d") ; do
+					CENTROEXCLUIDO=$(echo ${LINEA} | cut -d":" -f1)
+					MONTAJESEXCLUIDOS=$(echo ${LINEA} | cut -d":" -f2)
+					GRUPOEXCLUIDOS=$(echo ${LINEA} | cut -d":" -f3)
+					if ( echo "${ETIQUETAS}" | grep "${CENTROEXCLUIDO}" &> /dev/null ) ; then
+						echo "--> Este centro tiene excluidos: ${CENTROEXCLUIDO} -- ${ETIQUETAS}"
+						if [ "${GRUPOEXCLUIDOS}" = "ALL" ] \
+							|| (is_in_group "$USUARIO" "${GRUPOEXCLUIDOS}") ; then
+							echo "--> El usuario tiene exclusiones de grupo: ${USUARIO} -- ${GRUPOEXCLUIDOS}"
+							if [ "${MONTAJESEXCLUIDOS}" = "ALL" ] \
+								|| ( echo "${MONTAJESEXCLUIDOS}" | grep "${CARPETAMONTAJE}" &> /dev/null ); then
+								echo "--> Recurso excluido: ${CARPETAMONTAJE} -- ${MONTAJESEXCLUIDOS}"
+								FLAGMONTAR=0
+								break
 							fi
 						fi
 					fi
+				done
+			fi
+			# Montamos los recursos compartidos configurados si no están montados, comprobando si esta excluido o no
+			if [ ${FLAGMONTAR} -eq 1 ] && ! (grep "^$IPCACHE:$RECURSOREMOTO" /etc/mtab &> /dev/null) \
+				&&  (showmount -e $IPCACHE | grep $RECURSOREMOTO &> /dev/null) ; then
+				
+				if /usr/bin/nfs-crear-directorios-montaje.sh "$CARPETAMONTAJE" "$RECURSOREMOTO" "$MODOMONTAJE" ; then
+					if su ${USUARIO} -c "mount $CARPETAMONTAJE" --login ; then
+						notify-send -i vx-dga-correcto "$MENSAJEOK"
+					else
+						notify-send -i vx-dga-incorrecto "$MENSAJEERROR"
+					fi
+				fi
+			
 			fi
 			
-			CONTADOR=$(expr $CONTADOR + 1)
 		done
+	else
+		# Se ha perdido el acceso al servidor caché...Desmontamos en el caso de estar montados
+		# Sería conveniente un flag que salte ésta parte para mayor celeridad
+		[ "$(/usr/bin/nfs-desmontajes.sh)" = "DESMONTA" ] && notify-send -i vx-dga-incorrecto "Se ha perdido la conexión con los recursos compartidos del servidor caché"
 	fi
-	# Por si se produjera una desconexión inesperada, cada 10 segundos lo revisamos
-	sleep 10
+	# Por si se produjera una desconexión inesperada, cada 15 segundos lo revisamos
+	sleep 15
 done
