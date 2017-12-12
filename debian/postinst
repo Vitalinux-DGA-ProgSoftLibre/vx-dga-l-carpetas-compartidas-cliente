@@ -43,10 +43,15 @@ if [ -f usr/bin/tareas-logout ] ; then
 fi
 ###
 
-# Matamos el proceso cliente actual (con oknodo para que no de error la postinst) y Desmontamos lo que haya en ese momento en el equipo
-#start-stop-daemon --oknodo --stop --name "nfs-cliente.sh"
-# Matamos por si queda algo residente de versiones anteriores
+# Matamos el proceso cliente actual
+# * con oknodo para que no de error la postinst 
+# * y con tiempo de espera para que de timepo a finalizar, o sino se pase a mandar una señal de kill)
+/sbin/start-stop-daemon --oknodo --stop --name "nfs-cliente.sh" --retry=TERM/10/KILL/5
+
+# OBSOLETO: Matamos por si queda algo residente de versiones anteriores
 pgrep nfs-cliente > /dev/null 2>&1 && pkill nfs-cliente
+
+ # Desmontamos lo que haya en ese momento en el equipo
 [ -f "/usr/bin/nfs-desmontajes.sh" ] && /usr/bin/nfs-desmontajes.sh > /dev/null 2>&1
 
 
