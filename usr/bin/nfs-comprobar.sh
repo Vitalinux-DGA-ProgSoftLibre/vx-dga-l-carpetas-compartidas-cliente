@@ -31,7 +31,7 @@ if start-stop-daemon --status --name nfs-cliente.sh ; then
 	yad --center --title "Estado del Servicio NFS" \
 		--width 660 \
 		--image nfs-servicio \
-		--window-icon=/usr/share/lxpanel/images/vitalinux.svg \
+		--window-icon vitalinux \
 		--text "El <b>Servicio de Carpetas Compartidas</b> esta <b>Activo</b> ... \n $(cat /tmp/listado-recursos-nfs.${USUARIO})" \
 		--text-align center \
 		--button="Cerrar Ventana":0
@@ -40,7 +40,7 @@ else
 		--image nfs-servicio \
 		--width 660 \
 		--text-align center \
-		--window-icon=/usr/share/lxpanel/images/vitalinux.svg \
+		--window-icon vitalinux \
 		--text "El Servicio de Carpetas Compartidas no esta activo. \n La razón es desconocida. \n <b>¿Quieres activar el Servicio?</b>" \
 		--button="Activar Servicio":0 --button="Dejarlo Desactivado":1 ; then
 		if [ -f /usr/bin/nfs-cliente.sh ] ; then

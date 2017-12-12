@@ -26,7 +26,7 @@ if test "${MODOMONTAJE}" = "fstab" \
 	&& ! (grep ^$IPCACHE:$RECURSOREMOTO /etc/fstab &> /dev/null) ; then
 	echo "=> $(date) - Se va configurar en fstab: $IPCACHE:$RECURSOREMOTO"
 	if echo "$IPCACHE:$RECURSOREMOTO $CARPETAMONTAJE nfs \
-actimeo=25,noatime,bg,nfsvers=3,tcp,rw,noauto,user,hard,intr,defaults,exec 0 0" >> /etc/fstab ; then
+actimeo=1800,noatime,bg,nfsvers=3,tcp,rw,noauto,user,hard,intr,defaults,exec 0 0" >> /etc/fstab ; then
 		exit 0
 	else
 		echo "=> $(date) - Problemas al configurar fstab para: $IPCACHE:$RECURSOREMOTO" | tee -a ${LOG}
