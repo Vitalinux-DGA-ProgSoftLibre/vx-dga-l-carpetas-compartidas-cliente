@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Actualización del Software del Equipo
+Name[es]=Actualización del Software del Equipo
+Name[es_ES]=Actualización del Software del Equipo
+Comment=Aplicación que permite la Actualización del Software del Equipo
+Icon=/usr/share/pixmaps/menu-vitalinux/vx-actu.svg
+Exec=/usr/bin/vx-pk-actualizar-sistema
+Terminal=false
+Type=Application
+Categories=Sistema;
+StartupNotify=true
+Hidden=false

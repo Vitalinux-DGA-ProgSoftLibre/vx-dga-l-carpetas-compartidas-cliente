@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Asignar Computer Name
+Name[es]=Asignar Computer Name
+Name[es_ES]=Asignar Computer Name
+Comment=Programa que te permite Asignar un Computer Name para Migasfree
+Icon=/usr/share/pixmaps/menu-vitalinux/computer-icon.png
+Exec=/usr/bin/vx-pk-computer-name
+Terminal=false
+Type=Application
+Categories=Etiquetas;
+StartupNotify=true
+Hidden=false
