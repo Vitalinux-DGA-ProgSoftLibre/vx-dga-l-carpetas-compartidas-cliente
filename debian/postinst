@@ -51,8 +51,8 @@ fi
 # OBSOLETO: Matamos por si queda algo residente de versiones anteriores
 pgrep nfs-cliente > /dev/null 2>&1 && pkill nfs-cliente
 
- # Desmontamos lo que haya en ese momento en el equipo
-[ -f "/usr/bin/nfs-desmontajes.sh" ] && /usr/bin/nfs-desmontajes.sh > /dev/null 2>&1
+# Desmontamos lo que haya en ese momento en el equipo...ya no es necesario...si falla algo el propio cliente lo desmontará
+#[ -f "/usr/bin/nfs-desmontajes.sh" ] && /usr/bin/nfs-desmontajes.sh > /dev/null 2>&1
 
 
 # Lanzamos el montaje de unidades NFS en el cliente:

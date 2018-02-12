@@ -1,39 +1,27 @@
 #!/bin/bash
 # Código de estado que devuelve:
 # 0: si ha desmontado algún recurso y todo ha funcionado bien
-# 1: si no ha desmontado nada, pero todo ha funcionado bien
-# X: no sabemos que ha podido ocurrir...error dado por los comandos.
-## Comenzamos importando y definiendo las variables que usaremos posteriormente:
+# Devolverá en la salida estándar si ha desmontado algo o no mediante la cadena DESMONTA
+
 . /etc/default/vx-dga-variables/vx-dga-variables-general.conf
 
+LOG="/var/log/vitalinux/nfs-cliente.log"
+
 DESMONTA=0
-for RECURSO in $( cat /etc/mtab | grep "^${IPCACHE}" | cut -d" " -f2) ; do
-	if umount -lf ${RECURSO} ; then
-		rmdir --ignore-fail-on-non-empty ${RECURSO}
+RUTAMONTAJES="/usr/share/vitalinux/nfs-compartir/nfs-recursos"
+while IFS= read -r LINEA ; do
+	RECURSO=$(echo "${LINEA}" | cut -d":" -f2)
+	# Chequeamos que el recurso está montado, asociado a nfs y a nuestro servidor caché
+	! ( grep "^${IPCACHE}.* nfs .*" /proc/mounts | grep "$RECURSO" > /dev/null 2>&1 ) && continue
+	# Confirmamos el recurso con el dato existente en mounts
+	#RECURSO=$( < /proc/mounts grep "^${IPCACHE}.* nfs .*" | cut -d" " -f2)
+	echo "$(date) - Se va a desmontar el recurso: $RECURSO" >> ${LOG}
+	if umount -lf "${RECURSO}" ; then
+		[ -z "$(ls -A "${RECURSO}" )" ] && rmdir --ignore-fail-on-non-empty "${RECURSO}"
+		echo "$(date) - Desmontado: $RECURSO" >> ${LOG}
 		DESMONTA=1
 	fi
-done
+done < <(grep -v '^ *[ #]' $RUTAMONTAJES | grep -v '^$')
 
-
-# Eliminamos los puntos de montaje del fstab
-RUTAMONTAJES="/usr/share/vitalinux/nfs-compartir/nfs-recursos"
-if test -f ${RUTAMONTAJES} ; then
-	for LINEA in $(cat $RUTAMONTAJES | sed "/^#.*/d" | sed "/^$/d" | tr -s " " "*") ; do
-		RECURSO=$(echo $LINEA | tr -s "*" " ")
-		RECURSOREMOTO=$(echo $RECURSO | cut -d":" -f1)
-		CARPETAMONTAJE=$(echo $RECURSO | cut -d":" -f2)
-		MODOMONTAJE=$(echo $RECURSO | cut -d":" -f5)
-		if ( test "${MODOMONTAJE}" = "fstab" ) \
-			&& (grep "^$IPCACHE:$RECURSOREMOTO" /etc/fstab &> /dev/null) ; then
-			sed --follow-symlinks -i "\#^${IPCACHE}:${RECURSOREMOTO}.*#d" /etc/fstab
-		fi
-	done
-	# Limpiamos el /etc/fstab
-	sed --follow-symlinks -i "/^$/d" /etc/fstab
-	sed --follow-symlinks -i "/.*\/nfs\/alumnos.*/d" /etc/fstab
-	sed --follow-symlinks -i "/.*\/nfs\/profesor.*/d" /etc/fstab
-	sed --follow-symlinks -i "/.*\/nfs\/privado.*/d" /etc/fstab
-	sed --follow-symlinks -i "/.*\/nfs\/perfiles.*/d" /etc/fstab
-fi
-[ "$DESMONTA" = 1 ] && echo "DESMONTA"
+[ "$DESMONTA" = "1" ] && echo "DESMONTA"
 exit 0

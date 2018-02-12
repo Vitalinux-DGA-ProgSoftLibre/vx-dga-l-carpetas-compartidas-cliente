@@ -1,3 +1,11 @@
+vx-dga-l-carpetas-compartidas-cliente (3.0-23) unstable; urgency=low
+
+  * Depuración de codigo
+  * Se evita pasar el montaje por fstab
+  * Se excluye el recurso "profesores" para los alumnos - Ceip Alcorisa
+
+ -- Ignacio Sancho Morte <sannacho@gmail.com>  Tue, 8 Feb 2018 08:39:06 +0200
+
 vx-dga-l-carpetas-compartidas-cliente (3.0-22) unstable; urgency=low
 
   * Se excluye el recurso "profesores" para los alumnos

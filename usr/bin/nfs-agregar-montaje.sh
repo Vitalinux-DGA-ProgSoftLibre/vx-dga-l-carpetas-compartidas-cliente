@@ -13,22 +13,24 @@ AGREGAR=0
 
 if [ -n "$1" ]; then
 	ETIQUETAS="$1"
-elif test -f /usr/bin/migasfree-tags ; then
-	ETIQUETAS="$(migasfree-tags -g | tr -s '"' ' ')"
+elif [ -f /tmp/migasfree.tags ]; then
+		ETIQUETAS=$(cat /tmp/migasfree.tags)
+else
+		ETIQUETAS="$(migasfree-tags -g)" 
 fi
 
 if test -f ${NFSAGREGADOS} ; then
-	for AGREGADO in $(cat ${NFSAGREGADOS} | sed "/^#.*/d" | sed "/^$/d" | tr -s " " "*") ; do
-		RECURSO="$(echo $AGREGADO | tr -s '*' ' ')"
-		RECURSOREMOTO="$(echo $RECURSO | cut -d':' -f1)"
-		CARPETAMONTAJE="$(echo $RECURSO | cut -d':' -f2)"
-		CENTROAFECTADO="$(echo $RECURSO | cut -d':' -f7)"
+	for AGREGADO in $( < "${NFSAGREGADOS}" sed "/^#.*/d" | sed "/^$/d" | tr -s " " "*") ; do
+		RECURSO="$(echo "$AGREGADO" | tr -s '*' ' ')"
+		RECURSOREMOTO="$(echo "$RECURSO" | cut -d':' -f1)"
+		CARPETAMONTAJE="$(echo "$RECURSO" | cut -d':' -f2)"
+		CENTROAFECTADO="$(echo "$RECURSO" | cut -d':' -f6)"
 		if ( test "${CENTROAFECTADO}" = "ALL" ) || \
 			( echo "${ETIQUETAS}" | grep "${CENTROAFECTADO}" &> /dev/null ) ; then
-			if ! ( cat ${NFSRECURSOS} | grep "^${RECURSOREMOTO}:${CARPETAMONTAJE}" &> /dev/null ) ; then
+			if ! ( < ${NFSRECURSOS} grep "^${RECURSOREMOTO}:${CARPETAMONTAJE}" &> /dev/null ) ; then
 				AGREGAR=1
 				echo "$(date) - Se va a agregar un nuevo recurso: \"${RECURSO}\"" | tee -a ${LOG}
-				echo "${RECURSO}" | cut -d":" -f1,2,3,4,5,6 >> ${NFSRECURSOS}
+				echo "${RECURSO}" | cut -d":" -f1,2,3,4,5 >> ${NFSRECURSOS}
 			fi
 		fi
 	done

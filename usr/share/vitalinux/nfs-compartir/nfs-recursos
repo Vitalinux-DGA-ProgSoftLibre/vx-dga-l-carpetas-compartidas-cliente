@@ -1,5 +1,5 @@
 # Archivo que define los recursos compartidos existentes en todo Servidor Caché por defecto
 ## El último campo indica si se monta para todo los usuarios gráficos o únicamente para los administradores: 4(adm)
-/nfs/alumnos:/media/alumnos:Se ha montado correctamente la unidad de red Alumnos:No se han podido montar las Unidad de Red de Alumnos. Ha aparecido un error inesperado:fstab:NOADM:
-/nfs/profesor:/media/profesores:Se ha montado correctamente la unidad de red Profesores:No se han podido montar las Unidad de Red de Profesores. Ha aparecido un error inesperado:fstab:NOADM:
-/nfs/privado:/media/privado:Se ha montado correctamente la unidad de red Privada para Profesores:No se ha podido montar las Unidad de Red Privada para Profesores. Ha aparecido un error inesperado:fstab:ADM:
+/nfs/alumnos:/media/alumnos:Se ha montado correctamente la unidad de red Alumnos:No se han podido montar las Unidad de Red de Alumnos. Ha aparecido un error inesperado:NOADM:
+/nfs/profesor:/media/profesores:Se ha montado correctamente la unidad de red Profesores:No se han podido montar las Unidad de Red de Profesores. Ha aparecido un error inesperado:NOADM:
+/nfs/privado:/media/privado:Se ha montado correctamente la unidad de red Privada para Profesores:No se ha podido montar las Unidad de Red Privada para Profesores. Ha aparecido un error inesperado:ADM:
