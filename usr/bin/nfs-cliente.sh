@@ -38,7 +38,9 @@ if test -f /usr/bin/nfs-agregar-montaje.sh ; then
 	/usr/bin/nfs-agregar-montaje.sh "${ETIQUETAS}"
 fi
 
-# Variable encargada de decidir si se muestran mensajes para evitar mensajes recurrentes:
+# Variable encargada de decidir si se muestran mensajes para evitar mensajes "pesados":
+#  * Si en algún momento se pierde conexión con el servidor caché o no hay conexión se deshabilitan los mensajes
+#  * Si hay un error en algún montaje también se deshabilitan los mensajes
 MOSTRAR_MENSAJE=1
 
 # Opciones de montaje por defecto:
@@ -93,10 +95,11 @@ while true ; do
 				if /usr/bin/nfs-crear-directorios-montaje.sh "${CARPETAMONTAJE}" && \
 					mount -t nfs "${IPCACHE}:${RECURSOREMOTO}" "${CARPETAMONTAJE}" -o "${MNTOPTIONS}"; then
 						echo "$(date) - Se monta el recurso ${RECURSOREMOTO}" | tee -a ${LOG} && \
-						[ "${MOSTRAR_MENSAJE}" = "1" ] && notify-send -i vx-dga-correcto "${MENSAJEOK}"
+						[ "${MOSTRAR_MENSAJE}" = "1" ] && notify-send -t 1000 -i vx-dga-correcto "${MENSAJEOK}"
 				else
 						echo "$(date) - Error al montar el recurso ${RECURSOREMOTO}" | tee -a ${LOG} && \
-						[ "${MOSTRAR_MENSAJE}" = "1" ] && notify-send -i vx-dga-incorrecto "${MENSAJEERROR}"
+							[ "${MOSTRAR_MENSAJE}" = "1" ] && notify-send -t 1000 -i vx-dga-incorrecto "${MENSAJEERROR}" && \
+								MOSTRAR_MENSAJE=0
 
 				fi
 			
@@ -106,23 +109,29 @@ while true ; do
 	else
 		# Se ha perdido el acceso al servidor caché...Desmontamos en el caso de estar montados
 		# Sería conveniente un flag que salte ésta parte para mayor celeridad
-		MENSAJE_PERDIDA_CONEXION="Perdida la conexión con los recursos compartidos del servidor caché. Se intentará reconectar en breve"
+		#MENSAJE_PERDIDA_CONEXION="Perdida la conexión con los recursos compartidos del servidor caché. Se intentará reconectar en breve"
+		
+		# Si tenemos problemas de acceso con el servidor caché, cancelamos el mostrar mensajes
+		MOSTRAR_MENSAJE=0
 		[ "$(/usr/bin/nfs-desmontajes.sh)" = "DESMONTA" ] && \
-			echo "$(date) - Se desmontan los recursos" | tee -a ${LOG} && \
-			[ "${MOSTRAR_MENSAJE}" = "1" ] && \
-			notify-send -i vx-dga-incorrecto "${MENSAJE_PERDIDA_CONEXION}" && \
-			MOSTRAR_MENSAJE=0 && TEMPORIZADOR1="$(date +%s)" && TEMPORIZADOR2="$((${TEMPORIZADOR1} + (15 * 60)))"
+			echo "$(date) - Se desmontan los recursos" | tee -a ${LOG}
+		
+			#echo "$(date) - Se desmontan los recursos" | tee -a ${LOG} && \
+			#[ "${MOSTRAR_MENSAJE}" = "1" ] && \
+			#notify-send -i vx-dga-incorrecto "${MENSAJE_PERDIDA_CONEXION}" && \
+			#MOSTRAR_MENSAJE=0 && TEMPORIZADOR1="$(date +%s)" && TEMPORIZADOR2="$((${TEMPORIZADOR1} + (15 * 60)))"
 	fi
 
 	# Por si se produjera una desconexión inesperada, cada 15 segundos lo revisamos
 	sleep 15
 
 	# Comprobamos si se ha evitado mostrar mensajes durante los últimos 15 minutos
+<<COMMENT
 	if [ "${MOSTRAR_MENSAJE}" = "0" ] ; then
 		TEMPORIZADOR1="$(date +%s)"
 		if [[ "${TEMPORIZADOR1}" > "${TEMPORIZADOR2}" ]] ; then
 			MOSTRAR_MENSAJE=1
 		fi
 	fi
-
+COMMENT
 done

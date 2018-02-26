@@ -1,3 +1,9 @@
+vx-dga-l-carpetas-compartidas-cliente (3.1-0) unstable; urgency=low
+
+  * Eliminación de mensajes emergentes "pesados", salvo para los primeros montajes o un error
+
+ -- Ignacio Sancho Morte <sannacho@gmail.com>  Mon, 26 Feb 2018 08:39:06 +0200
+
 vx-dga-l-carpetas-compartidas-cliente (3.0-23) unstable; urgency=low
 
   * Depuración de codigo
