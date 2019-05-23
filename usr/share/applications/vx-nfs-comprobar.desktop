@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Carpetas Compartidas - Comprobar
+Exec=/usr/bin/nfs-comprobar.sh
+Type=Application
+StartupNotify=true
+Icon=nfs-servicio
+Categories=Vitalinux;

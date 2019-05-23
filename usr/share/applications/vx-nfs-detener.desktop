@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Carpetas Compartidas - Detener
+Exec=/usr/bin/nfs-detener.sh
+Type=Application
+StartupNotify=true
+Icon=nfs-detener
+Categories=Vitalinux;
