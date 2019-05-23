@@ -13,10 +13,8 @@ AGREGAR=0
 
 if [ -n "$1" ]; then
 	ETIQUETAS="$1"
-elif [ -f /tmp/migasfree.tags ]; then
-		ETIQUETAS=$(cat /tmp/migasfree.tags)
 else
-		ETIQUETAS="$(migasfree-tags -g)" 
+	ETIQUETAS="" 
 fi
 
 if test -f ${NFSAGREGADOS} ; then

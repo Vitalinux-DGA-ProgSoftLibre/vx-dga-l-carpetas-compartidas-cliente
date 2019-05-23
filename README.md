@@ -23,6 +23,10 @@ apt-get install debhelper devscripts
 /usr/bin/debuild --no-tgz-check -us -uc
 ```
 
+En caso de no querer crear el paquete para tu distribución, puedes hacer uso del que está disponible para Vitalinux (*Lubuntu 14.04*) desde el siguiente repositorio:
+
+[Respositorio de paquetes DEB de Vitalinux](http://migasfree.educa.aragon.es/repo/Lubuntu-14.04/STORES/base/)
+
 # Como Instalar el paquete generado vx-dga-l-*.deb:
 Para la instalación de paquetes que estan en el equipo local puede hacerse uso de ***dpkg*** o de ***gdebi***, siendo este último el más aconsejado para que se instalen también las dependencias correspondientes.
 ```

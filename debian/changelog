@@ -1,3 +1,34 @@
+vx-dga-l-carpetas-compartidas-cliente (3.2-4) unstable; urgency=low
+
+  * Bug Postinstalación
+
+ -- Ignacio Sancho Morte <sannacho@gmail.com>  Mon, 25 Feb 2019 08:39:06 +0200
+
+vx-dga-l-carpetas-compartidas-cliente (3.2-3) unstable; urgency=low
+
+  * Numeración del script de postrun (desmontaje)
+
+ -- Ignacio Sancho Morte <sannacho@gmail.com>  Mon, 25 Feb 2019 08:39:06 +0200
+
+vx-dga-l-carpetas-compartidas-cliente (3.2-2) unstable; urgency=low
+
+  * Solución de desmontaje (llamada incorrecta) al cerrar la sesión
+
+ -- Ignacio Sancho Morte <sannacho@gmail.com>  Fri, 11 Jan 2019 08:39:06 +0200
+
+vx-dga-l-carpetas-compartidas-cliente (3.2-1) unstable; urgency=low
+
+  * Se añaden scripts para parar el servicio de carpetas compartidas de forma manual
+  * La comprobación de etiquetas cliente se asegura al incio para evitar problemas de conexión con migasfree
+
+ -- Ignacio Sancho Morte <sannacho@gmail.com>  Fri, 11 Jan 2019 08:39:06 +0200
+
+vx-dga-l-carpetas-compartidas-cliente (3.1-1) unstable; urgency=low
+
+  * Configuración del grupo profesor y privado para poder montar recursos de tipo ADM
+
+ -- Arturo Martín Romero <amartinromero@gmail.com>  Mon, 4 Jun 2018 08:39:06 +0200
+
 vx-dga-l-carpetas-compartidas-cliente (3.1-0) unstable; urgency=low
 
   * Eliminación de mensajes emergentes "pesados", salvo para los primeros montajes o un error

@@ -21,9 +21,8 @@ case "$1" in
     remove)
 	
     # Matamos el proceso cliente actual y Desmontamos lo que haya en ese momento en el equipo
-    /sbin/start-stop-daemon --stop --name "nfs-cliente.sh"
-    #pkill nfs-cliente
-    [ -f "/usr/bin/nfs-desmontajes.sh" ] && /usr/bin/nfs-desmontajes.sh
+    /sbin/start-stop-daemon --oknodo --stop --pidfile /run/nfs-cliente.pid --retry=TERM/10/KILL/5
+    
 
     ;;
     upgrade|deconfigure)

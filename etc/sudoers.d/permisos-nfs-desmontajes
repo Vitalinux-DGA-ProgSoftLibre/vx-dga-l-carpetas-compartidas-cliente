@@ -1,4 +1,6 @@
 # Forma de conceder privilegios a los usuarios:
 ## alumno ALL = (root) [NOPASSWD:] ALL/comandos
+#ALL ALL = (ALL) NOPASSWD: /sbin/start-stop-daemon --oknodo --stop --name "nfs-cliente.sh" --retry=TERM/10/KILL/5
+ALL ALL = (ALL) NOPASSWD: /sbin/start-stop-daemon --oknodo --stop --pidfile /run/nfs-cliente.pid --retry=TERM/10/KILL/5
 #ALL ALL = (ALL) NOPASSWD: /bin/umount /media/alumnos, /bin/umount /media/profesores, /bin/umount /media/privado, /usr/bin/nfs-desmontajes.sh
 #ALL ALL = (ALL) NOPASSWD: /usr/bin/nfs-desmontajes.sh
